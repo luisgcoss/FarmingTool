@@ -6,22 +6,6 @@ byte fps = 3; // Numero de caracteres
 int frameDelay = 1000 / fps;
 
 
-
-class Animation{
-  private:
-    char arreglo[];
-  public:
-    Animation(char);
-    int imprimir();
-  
-};
-
-Animation::Animation(char _arreglo){
-  arreglo = _arreglo;
-}
-
-
-
 // Formato del Array [No de framess][No de filas][Bytes lcd]
 byte milpa[7][3][2][8] = {
   //PrimerFrame
@@ -531,7 +515,8 @@ byte milpa[7][3][2][8] = {
 
 };
 
-int print() {
+
+void print() {
   for (int i = 0; i < sizeof(milpa) / sizeof(milpa[0]); i++)
   {
     delay(frameDelay);
@@ -556,7 +541,6 @@ int print() {
       }
     }
   }
-  return 0;
 }
 void setup()
 {
