@@ -7,64 +7,87 @@ LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7); // LCD pin declaration
 byte fps = 3; // Number of characters per frame
 int frameDelay = 1000 / fps;  // Frame duration
 
-class animacion
+class animation
 {
   private:
-  int rows, columns;
-  byte *dircaracteres;
+  int rows, cols, frames;
+  byte *dirChars;
 
   public:
-  animacion(byte *, int, int);
-  void imprimir(int, int);
+  animation(byte *, int, int, int);
+  void draw(int, int);
 };
 
-animacion::animacion(byte *_dircaracteres, int _rows, int _columns)
+animation::animation(byte *_dirChars, int _rows, int _cols, int _frames)
 {
-  dircaracteres = _dircaracteres;
+  dirChars = _dirChars;
   rows = _rows;
-  columns = _columns;
+  cols = _cols;
+  frames = _frames;
 }
 
-void animacion::imprimir(int x, int y)
+void animation::draw(int x, int y)
 {
-    for (int i = 0; i < columns; i++)
+  const byte *address;
+  address = dirChars;
+  for(int i=0; i<frames; i++){
+    byte numChar = 0;
+    delay(frameDelay);
+    for (int j = 0; j < cols; j++)
     {       
-        //numChar = 0;
-        for (int j = 0; j < rows; j++)
-        {
-          //numChar++;
-          lcd.createChar(1, dircaracteres);
-          lcd.setCursor(x, y);
-          lcd.print(char(1));
-          dircaracteres += 8;
-
+      for (int k = 0; k < rows; k++)
+      {
+        byte _x = x + j;
+        byte _y = y + k;
+        lcd.createChar(numChar, dirChars);
+        lcd.setCursor(_x, _y);
+        lcd.print(char(numChar));
+        dirChars += 8;
+        numChar++;
 
       }
+    }
+
   }
-  delay(frameDelay);
+  dirChars = address;
+  // for(int i=0; i<(x * y); i++){
+  //   byte voidChar[] = {  
+  //     B00000,
+  //     B00000,
+  //     B00000,
+  //     B00000,
+  //     B00000,
+  //     B00000,
+  //     B00000,
+  //     B00000
+  //   };
+  //   lcd.createChar(1, voidChar);
+  // }
 
 }
 
+
+
 byte cara[] = {  
-    B00000,
-    B01010,
-    B01010,
-    B01010,
-    B00100,
-    B01110,
-    B10001,
-    B00000
+  B00000,
+  B01010,
+  B01010,
+  B01010,
+  B00100,
+  B01110,
+  B10001,
+  B00000
 };
 
 byte milpa[] = {
   //FistFrame
   B00000,
-  B00100,
-  B00100,
-  B00100,
-  B00100,
-  B00100,
-  B00100,
+  B00000,
+  B00000,
+  B00000,
+  B00000,
+  B00000,
+  B00000,
   B00000,
 
   B00000,
@@ -456,18 +479,19 @@ void setup()
   dirNum = milpa;
   dirCar = cara;
 
-  lcd.setCursor(5, 0);
+  lcd.setCursor(4, 0);
   lcd.print("CARGANDO");
 
-  animacion cana(dirNum, 2, 3);
+  animation cana(dirNum, 2, 3,7);
 
-  cana.imprimir(2, 0);
+  cana.draw(0, 0);
+  cana.draw(13, 0);
   delay(500);
-  // cana.imprimir(10, 1);
+  // cana.draw(10, 1);
   // delay(500);
-  animacion carita(dirCar, 1, 1);
+  animation carita(dirCar, 1, 1,7);
   delay(500);
-  carita.imprimir(9, 1);
+  //carita.draw(9, 1);
 }
 
 void loop()
