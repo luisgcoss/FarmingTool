@@ -4,8 +4,10 @@
 //#include "caracteres_v1.h"
 LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7); // LCD pin declaration
 
-byte fps = 3; // Number of characters per frame
-int frameDelay = 1000 / fps;  // Frame duration
+const long fps = 3; // Number of characters per frame
+unsigned long frameDelay = 1000 / fps;  // Frame duration
+unsigned long previousMillis = 0;
+unsigned long currentMillis = 0;
 
 class animation
 {
@@ -29,27 +31,34 @@ animation::animation(byte *_dirChars, int _rows, int _cols, int _frames)
 void animation::draw(int x, int y)
 {
   const byte *address;
-  address = dirChars;
-  for(int i=0; i<frames; i++){
+  address = dirChars;    //saving initial memory address 
+  
+  
+  for(int i=0; i<frames; i++) {     //bucle for (frames)
     byte numChar = 0;
-    delay(frameDelay);
-    for (int j = 0; j < cols; j++)
-    {       
-      for (int k = 0; k < rows; k++)
-      {
-        byte _x = x + j;
-        byte _y = y + k;
+    Serial.println(currentMillis);
+    //if (currentMillis - previousMillis >= fram) {
+      previousMillis = currentMillis;
+      for (int j = 0; j < cols; j++) {     //bucle for (cols) 
+        for (int k = 0; k < rows; k++) {   //bucle for (rows)
+        byte _x = x + j;    //x cord
+        byte _y = y + k;    //y cord
         lcd.createChar(numChar, dirChars);
         lcd.setCursor(_x, _y);
+        lcd.print(char(numChar));
+        lcd.setCursor(_x + 13,_y);
         lcd.print(char(numChar));
         dirChars += 8;
         numChar++;
 
       }
     }
-
+while(currentMillis - previousMillis <= frameDelay){
+      currentMillis = millis();
+}
   }
-  dirChars = address;
+//}
+  dirChars = address;     //restarting initial memory adress
   // for(int i=0; i<(x * y); i++){
   //   byte voidChar[] = {  
   //     B00000,
@@ -73,9 +82,9 @@ byte cara[] = {
   B01010,
   B01010,
   B01010,
-  B00100,
-  B01110,
+  B00000,
   B10001,
+  B01110,
   B00000
 };
 
@@ -485,11 +494,12 @@ void setup()
   animation cana(dirNum, 2, 3,7);
 
   cana.draw(0, 0);
-  cana.draw(13, 0);
-  delay(500);
+  //cana.draw(13, 0);
+
   // cana.draw(10, 1);
   // delay(500);
-  animation carita(dirCar, 1, 1,7);
+  animation carita(dirCar, 1, 1,1);
+  carita.draw(8,1);
   delay(500);
   //carita.draw(9, 1);
 }
@@ -497,4 +507,5 @@ void setup()
 void loop()
 {
   // put your main code here, to run repeatedly:
+
 }
